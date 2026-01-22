@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { logout } from "@/lib/auth"
 import { redirect } from "next/navigation"
+import { MobileNav } from "@/components/MobileNav" // Import the new component
 import { LayoutDashboard, ArrowRightLeft, LogOut, History, User } from "lucide-react"
 
 export default function DashboardLayout({
@@ -51,6 +52,9 @@ export default function DashboardLayout({
           {children}
         </div>
       </main>
+
+      {/* 👇 ADD THIS: Shows only on mobile */}
+      <MobileNav />
     </div>
   )
 }

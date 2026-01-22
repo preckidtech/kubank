@@ -1,3 +1,5 @@
+// prisma/schema.prisma
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,27 +12,30 @@ datasource db {
 
 // --- USER TABLE ---
 model User {
-  id          String   @id @default(uuid())
-  email       String   @unique
-  firstName   String
-  lastName    String
-  password    String
-  avatarUrl   String?  @db.Text
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  accounts    Account[]
+  id        String   @id @default(uuid())
+  email     String   @unique
+  firstName String
+  lastName  String
+  password  String
+  avatarUrl String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  accounts  Account[]
 }
 
 // --- ACCOUNT TABLE ---
 model Account {
-  id                  String        @id @default(cuid())
-  accountNumber       String        @unique
-  balance             Float         @default(50000.00)
-  pin                 String
-  userId              String
-  user                User          @relation(fields: [userId], references: [id])
-  createdAt           DateTime      @default(now())
+  id            String   @id @default(cuid())
+  accountNumber String   @unique
+  balance       Float    @default(50000.00)
+  pin           String
   
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt // Added for good practice (Net-Centric Data Consistency)
+
   // Relations for transaction tracking
   sentTransactions     Transaction[] @relation("SenderAccount")
   receivedTransactions Transaction[] @relation("ReceiverAccount")
@@ -43,9 +48,9 @@ model Transaction {
   type        String   // e.g., "TRANSFER" or "DEPOSIT"
   status      String   @default("COMPLETED")
   
-  // Added description field to fix Vercel build error
+  // 👇 THIS IS THE FIELD THAT FIXES YOUR ERROR
   description String?  
-  
+
   senderId    String
   sender      Account  @relation("SenderAccount", fields: [senderId], references: [id])
   

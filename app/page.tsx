@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ShieldCheck, ArrowRight, Building2 } from "lucide-react"
+import { ShieldCheck, ArrowRight, Building2, Lock } from "lucide-react"
 
 export default function Home() {
   return (
@@ -9,12 +9,12 @@ export default function Home() {
         
         {/* Badge */}
         <div className="mx-auto w-fit rounded-full bg-blue-50 px-4 py-1.5 text-sm font-medium text-blue-600 ring-1 ring-inset ring-blue-600/20 flex items-center gap-2">
-          <Building2 className="h-3 w-3" /> Secure Banking System
+          <Lock className="h-3 w-3" /> Secure Net-Centric Vault
         </div>
 
-        {/* Hero Text */}
+        {/* Hero Text: Updated to KUVAULT */}
         <h1 className="text-5xl font-extrabold tracking-tight text-slate-900 sm:text-7xl">
-          KU <span className="text-blue-600">Bank</span>
+          KU <span className="text-blue-600">VAULT</span>
         </h1>
         
         <p className="mx-auto max-w-xl text-lg text-slate-600 leading-relaxed">
