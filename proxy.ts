@@ -1,37 +1,38 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
+// FIXED: Renamed function from 'middleware' to 'proxy'
+export function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname
   const token = request.cookies.get('session')?.value
 
-  // LOGGING: This will show in your terminal so we know it's working
-  console.log(`[Middleware] Checking path: ${path}`)
+  console.log(`[Proxy] Checking path: ${path}`)
 
   // 1. DEFINE PUBLIC PATHS
-  // These are pages that should NEVER redirect users to login
   const publicPaths = ['/', '/login', '/register']
 
-  // 2. CHECK: Is the user on a public path?
+  // 2. REDIRECT LOGGED-IN USERS AWAY FROM LOGIN/REGISTER
+  if (token && (path === '/login' || path === '/register')) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  // 3. ALLOW PUBLIC PATHS
   if (publicPaths.includes(path)) {
-    // If yes, STOP. Do not redirect. Just let the page load.
     return NextResponse.next()
   }
 
-  // 3. CHECK: Is the user trying to access Dashboard?
+  // 4. PROTECT DASHBOARD PATHS
   if (path.startsWith('/dashboard')) {
-    // If no token, THEN redirect to login
     if (!token) {
-      console.log(`[Middleware] No token found. Redirecting to Login.`)
+      console.log(`[Proxy] No token found. Redirecting to Login.`)
       return NextResponse.redirect(new URL('/login', request.url))
     }
   }
 
-  // 4. Default: Allow everything else
   return NextResponse.next()
 }
 
+// Ensure the matcher is set to include the proxy
 export const config = {
-  // Use this specific matcher to ignore internal Next.js files
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 }
