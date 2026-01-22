@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// --- TABLE 1: THE USER ---
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  firstName String
+  lastName  String
+  password  String
+  avatarUrl String?  @db.Text // <--- ADD THIS (Allows storing long image codes)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt // <--- ADD THIS
+  accounts  Account[]
+}
+
+model Account {
+  id            String   @id @default(cuid())
+  accountNumber String   @unique
+  balance       Float    @default(50000.00)
+  pin           String
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  createdAt     DateTime @default(now())
+
+  // --- ADD THESE TWO LINES BELOW ---
+  sentTransactions     Transaction[] @relation("SenderAccount")
+  receivedTransactions Transaction[] @relation("ReceiverAccount")
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  amount      Float
+  type        String   // e.g., "TRANSFER" or "DEPOSIT"
+  status      String   @default("COMPLETED")
+  
+  senderId    String
+  sender      Account  @relation("SenderAccount", fields: [senderId], references: [id])
+  
+  receiverId  String
+  receiver    Account  @relation("ReceiverAccount", fields: [receiverId], references: [id])
+  
+  createdAt   DateTime @default(now())
+}
