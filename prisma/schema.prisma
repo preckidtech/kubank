@@ -8,38 +8,43 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-// --- TABLE 1: THE USER ---
+// --- USER TABLE ---
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  firstName String
-  lastName  String
-  password  String
-  avatarUrl String?  @db.Text // <--- ADD THIS (Allows storing long image codes)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt // <--- ADD THIS
-  accounts  Account[]
+  id          String   @id @default(uuid())
+  email       String   @unique
+  firstName   String
+  lastName    String
+  password    String
+  avatarUrl   String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  accounts    Account[]
 }
 
+// --- ACCOUNT TABLE ---
 model Account {
-  id            String   @id @default(cuid())
-  accountNumber String   @unique
-  balance       Float    @default(50000.00)
-  pin           String
-  userId        String
-  user          User     @relation(fields: [userId], references: [id])
-  createdAt     DateTime @default(now())
-
-  // --- ADD THESE TWO LINES BELOW ---
+  id                  String        @id @default(cuid())
+  accountNumber       String        @unique
+  balance             Float         @default(50000.00)
+  pin                 String
+  userId              String
+  user                User          @relation(fields: [userId], references: [id])
+  createdAt           DateTime      @default(now())
+  
+  // Relations for transaction tracking
   sentTransactions     Transaction[] @relation("SenderAccount")
   receivedTransactions Transaction[] @relation("ReceiverAccount")
 }
 
+// --- TRANSACTION TABLE ---
 model Transaction {
   id          String   @id @default(cuid())
   amount      Float
   type        String   // e.g., "TRANSFER" or "DEPOSIT"
   status      String   @default("COMPLETED")
+  
+  // Added description field to fix Vercel build error
+  description String?  
   
   senderId    String
   sender      Account  @relation("SenderAccount", fields: [senderId], references: [id])
