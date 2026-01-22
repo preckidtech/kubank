@@ -28,11 +28,17 @@ export default function RegisterPage() {
   async function handleRegister(formData: FormData) {
     setLoading(true)
     setError("")
+    
+    // We await the server action
     const result = await registerUser(formData)
+    
+    // If there is an error, stop loading and show it
     if (result?.error) {
       setError(result.error)
       setLoading(false)
     }
+    // If success, the server action will redirect, so we keep loading true 
+    // to prevent double-clicks while the page changes.
   }
 
   return (
@@ -116,13 +122,22 @@ export default function RegisterPage() {
 
             {/* Errors and Submit */}
             <div className="sm:col-span-2 pt-2">
-              {error && <p className="text-[11px] text-red-500 text-center mb-2">{error}</p>}
+              {error && <div className="p-2 mb-2 bg-red-50 text-red-600 text-[11px] text-center rounded border border-red-100">{error}</div>}
+              
               <Button 
                 type="submit" 
-                className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-white font-bold" 
+                className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-white font-bold transition-all active:scale-95" 
                 disabled={loading || !isFormValid}
               >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : "Open Account"}
+                {/* 👇 UPDATED LOADING UI */}
+                {loading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Creating Account...</span>
+                  </div>
+                ) : (
+                  "Open Account"
+                )}
               </Button>
             </div>
 
